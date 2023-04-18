@@ -17,16 +17,23 @@ app.use(cors());
 require("crypto").randomBytes(64).toString("hex");
 app.use(bodyParser.json());
 
-
 const TOKEN_SECRET = "qwdqwdqwdqdw"; //fs.readFileSync("./key.pub", "utf8");    bzw secret
 
 //////////
 //////////
 
+let user = [{ username: "user1", passwort: "testpw" }];
+
 app.post("/api/createNewUser", async (req, res) => {
+  if (
+    user[0].username != req.body.username ||
+    user[0].passwort != req.body.passwort
+  ) {
+    return;
+  }
   const token = await generateAccessToken({ username: req.body.username });
   res.json(token);
-  console.log(token)
+  console.log(token);
 });
 
 async function generateAccessToken(username) {
@@ -51,15 +58,12 @@ function authenticateToken(req, res, next) {
     if (err) return res.sendStatus(403);
 
     req.user = user;
-    
+
     next();
   });
 }
 
-
-
-
-const authRoute = require('./routes/auth')
+const authRoute = require("./routes/auth");
 app.use("/api/auth", authenticateToken, authRoute, (req, res) => {
   res.json("token valid");
 });
