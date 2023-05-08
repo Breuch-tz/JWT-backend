@@ -17,55 +17,17 @@ app.use(cors());
 require("crypto").randomBytes(64).toString("hex");
 app.use(bodyParser.json());
 
-const TOKEN_SECRET = "qwdqwdqwdqdw"; //fs.readFileSync("./key.pub", "utf8");    bzw secret
+ 
+const authUser = require("./auth/authUser")
+const authenticateTokenFunc = authUser.authenticateToken;
 
-//////////
-//////////
-
-let user = [{ username: "user1", passwort: "testpw" }];
-
-app.post("/api/createNewUser", async (req, res) => {
-  if (
-    user[0].username != req.body.username ||
-    user[0].passwort != req.body.passwort
-  ) {
-    return;
-  }
-  const token = await generateAccessToken({ username: req.body.username });
-  res.json(token);
-  console.log(token);
-});
-
-async function generateAccessToken(username) {
-  return jsonwebtoken.sign(username, TOKEN_SECRET, { expiresIn: "100s" });
-}
-
-///////
-///////
-
-// app.get("/api/auth", authenticateToken, (req, res) => {
-//   res.json("token valid");
-// });
-
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (token == null) return res.sendStatus(401);
-
-  jsonwebtoken.verify(token, TOKEN_SECRET, (err, user) => {
-    console.log(user);
-    if (err) return res.sendStatus(403);
-
-    req.user = user;
-
-    next();
-  });
-}
 
 const authRoute = require("./routes/auth");
-app.use("/api/auth", authenticateToken, authRoute, (req, res) => {
-  res.json("token valid");
+app.use("/api/auth", authenticateTokenFunc, authRoute, (req, res) => { 
+});
+
+const loginRoute = require("./routes/login");
+app.use("/api/login", loginRoute, (req, res) => {
 });
 
 app.listen(PORT, function (err) {
