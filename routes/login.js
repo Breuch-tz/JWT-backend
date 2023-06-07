@@ -12,19 +12,22 @@ app.use(bodyParser.json());
 
 let user = [{ username: "user1", passwort: "testpw" }];
 
-router.get("/", async (req, res) => {
+router.post("/", async (req, res) => {
+
+  
   if (
-    user[0].username != req.body.username ||
-    user[0].passwort != req.body.passwort
+    user[0].username !== req.body.email ||
+    user[0].passwort !== req.body.password
   ) {
     return;
   }
-  const token = await generateAccessTokenFunc({ username: req.body.username });
+  const token = await generateAccessTokenFunc({ username: req.body.email });
   res.json(token);
   console.log(token);
 });
 
 const authUser = require("../auth/authUser");
+const { log } = require("console");
 
 const generateAccessTokenFunc = authUser.generateAccessToken;
 

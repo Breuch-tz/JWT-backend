@@ -28,6 +28,7 @@ app.use("/api/auth", authenticateTokenFunc, authRoute, (req, res) => {
 
 const loginRoute = require("./routes/login");
 app.use("/api/login", loginRoute, (req, res) => {
+  // console.log(req.body)
 });
 
 app.listen(PORT, function (err) {
